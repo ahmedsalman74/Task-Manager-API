@@ -11,31 +11,34 @@ const getAlltasks = asyncWrapper(
 )
 const createTask = asyncWrapper(async (req, res) => {
     const task = await Task.create(req.body)
-    res.status(201).json({ status: "success", data: { task: task } })
+    res.status(201).json({ task })
 
 })
 
 const getTask = asyncWrapper(
     async (req, res, next) => {
-        const task = await Task.findById(req.params.id)
+        const { id: taskID } = req.params
+        const task = await Task.findOne({ _id: taskID })
         if (!task) {
             const error = AppError.create('Task not found', 404, "fail")
             return next(error)
 
 
         }
-        return res.json({ status: "success", data: { task: task } })
+        return res.json({ task })
 
     })
 const updateTask = async (req, res) => {
-    const taskId = req.params.id;
-    const updateTask = await Task.findByIdAndUpdate(taskId, { $set: { ...req.body } })
-    const task = await Task.findById(taskId)
+    const { id: taskID } = req.params
+    const task = await Task.findOneAndUpdate({ _id: taskID }, req.body, {
+        new: true,
+        runValidators: true,
+      })
 
-    return res.json({ status: "success", data: { task: task } })
+    return res.json( { task } )
 }
 const deleteTask = async (req, res) => {
-    const deleteTask = await Task.deleteOne({_id: req.params.id})
+    const deleteTask = await Task.deleteOne({ _id: req.params.id })
     res.status(200).json({ status: "success", dat: null });
 
 
