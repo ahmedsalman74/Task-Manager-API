@@ -13,7 +13,7 @@ console.log("DB connection established ....")
 
 
 
-
+app.use(express.static('./public'));
 app.use('/api/v1/tasks', tasks)
 
 
